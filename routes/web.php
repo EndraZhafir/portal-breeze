@@ -17,28 +17,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
 });
 
-Route::get('/admin/jobs', function () {
-    return 'This is the job panel.';
-})->middleware(['auth', 'isAdmin'])->name('adminJob');
-
-Route::get('/jobs', function () {
-    $user = Auth::user();
-
-    if (!$user) {
-        return redirect()->route('login');
-    }
-
-    if ($user->role === 'admin') {
-        return redirect()->route('adminJob');
-    }
-    
-    return app(JobController::class)->index();
-})->name('jobs');
-
-Route::get('/admin', function () {
-    return 'Welcome to the admin panel.';
-})->middleware(['auth', 'isAdmin']);
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
+    Route::get('/jobs', [JobController::class, 'adminIndex'])->name('admin.jobs.index');
+    Route::resource('jobs', JobController::class);
+});
 
 require __DIR__.'/auth.php';
