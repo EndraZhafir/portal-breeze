@@ -20,7 +20,7 @@
 
             <div class="flex">
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('job')">
+                    <x-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.index')">
                         {{ __('Jobs') }}
                     </x-nav-link>
                     <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
