@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\JobVacancy as Job;
 
 class JobController extends Controller
@@ -34,6 +35,7 @@ class JobController extends Controller
             'description' => 'required',
             'location' => 'required',
             'company' => 'required',
+            'job_type' => 'required|in:Full-time,Part-time',
             'logo' => 'image|mimes:jpg,png,jpeg|max:2048'
         ]);
 
@@ -48,6 +50,7 @@ class JobController extends Controller
             'location' => $request->location,
             'company' => $request->company,
             'salary' => $request->salary,
+            'job_type' => $request->job_type,
             'logo' => $logoPath
         ]);
 
@@ -67,7 +70,8 @@ class JobController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $job = Job::findOrFail($id);
+        return view('jobs.edit', compact('job'));
     }
 
     /**
@@ -75,7 +79,36 @@ class JobController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'location' => 'required',
+            'company' => 'required',
+            'job_type' => 'required|in:Full-time,Part-time',
+            'logo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+        $job = Job::findOrFail($id);
+        $logoPath = $job->logo; // simpan logo lama jika tidak ada yang diupload baru
+
+        if ($request->hasFile('logo')) {
+            // hapus logo lama jika ada dan mau diupdate
+            if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+                Storage::disk('public')->delete($job->logo);
+            }
+            $logoPath = $request->file('logo')->store('logos', 'public');
+        }
+
+        $job->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'location' => $request->location,
+            'company' => $request->company,
+            'salary' => $request->salary,
+            'job_type' => $request->job_type,
+            'logo' => $logoPath
+        ]);
+
+        return redirect()->route('jobs.index')->with('success', 'Lowongan berhasil diperbarui');
     }
 
     /**
@@ -83,6 +116,11 @@ class JobController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $job = Job::findOrFail($id);
+        if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+            Storage::disk('public')->delete($job->logo);
+        }
+        $job->delete();
+        return redirect()->route('jobs.index')->with('success', 'Lowongan berhasil dihapus');
     }
 }

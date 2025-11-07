@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('location');
             $table->string('company');
             $table->string('logo')->nullable();
-            $table->decimal('salary')->nullable();
+            $table->bigInteger('salary')->nullable();
+            $table->enum('job_type', ['Full-time', 'Part-time']);
             $table->timestamps();
         });
     }
