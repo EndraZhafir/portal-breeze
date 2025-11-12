@@ -86,7 +86,7 @@ class ApplicationController extends Controller
         ]);
 
         // Kirim email ke pelamar (via queue)
-        dispatch(new SendApplicationMailJob($application->job, auth()->user()));
+        dispatch(new SendApplicationMailJob($application->job_id, $application->user_id));
 
         // Kirim notifikasi ke admin
         $admin = User::where('role', 'admin')->first();

@@ -14,16 +14,16 @@ class SendApplicationMailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $job;
-    public $user;
+    public $jobId;
+    public $userId;
 
     /**
      * Create a new job instance.
      */
     public function __construct($job, $user)
     {
-        $this->job = $job;
-        $this->user = $user;
+        $this->jobId = $job;
+        $this->userId = $user;
     }
 
     /**
@@ -31,6 +31,14 @@ class SendApplicationMailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->user->email)->send(new JobAppliedMail($this->job, $this->user));
+        $job = \App\Models\JobVacancy::find($this->jobId);
+        $user = \App\Models\User::find($this->userId);
+        \Log::info('SendApplicationMailJob', [
+            'user_email' => $user ? $user->email : null,
+            'job_title' => $job ? $job->title : null,
+        ]);
+        if ($job && $user) {
+            Mail::to($user->email)->send(new JobAppliedMail($job, $user));
+        }
     }
 }

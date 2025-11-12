@@ -28,7 +28,7 @@ class JobAppliedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Lamaran Baru untuk ' . $this->job->title,
+            subject: 'Konfirmasi Lamaran Anda - ' . $this->job->title,
         );
     }
 
