@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Tambah Lowongan Baru') }}
+            {{ __('Edit Lowongan') }}
         </h2>
     </x-slot>
 
@@ -10,9 +10,10 @@
             <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-xl">
                 <div class="p-8 text-gray-900 dark:text-gray-100">
 
-                    <form action="{{ route('jobs.store') }}" method="POST" enctype="multipart/form-data"
+                    <form action="{{ route('jobs.update', $job->id) }}" method="POST" enctype="multipart/form-data"
                         class="space-y-6">
                         @csrf
+                        @method('PUT')
 
                         {{-- TITLE --}}
                         <div class="space-y-2">
@@ -26,7 +27,7 @@
                                     </svg>
                                 </div>
                                 <x-text-input id="title" class="block w-full pl-10 py-3" type="text" name="title"
-                                    placeholder="Contoh: Senior Web Developer" :value="old('title')" required autofocus />
+                                    value="{{ old('title', $job->title) }}" required />
                             </div>
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
@@ -34,10 +35,8 @@
                         {{-- DESCRIPTION --}}
                         <div class="space-y-2">
                             <x-input-label for="description" :value="__('Deskripsi')" class="text-base font-semibold" />
-                            <textarea name="description" id="description"
-                                placeholder="Jelaskan tanggung jawab pekerjaan, kualifikasi, benefit, dll."
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-lg shadow-sm block w-full py-3"
-                                rows="6" required>{{ old('description') }}</textarea>
+                            <textarea name="description" id="description" rows="6" required
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-lg shadow-sm block w-full py-3">{{ old('description', $job->description) }}</textarea>
                             <x-input-error :messages="$errors->get('description')" class="mt-2" />
                         </div>
 
@@ -53,7 +52,7 @@
                                     </svg>
                                 </div>
                                 <x-text-input id="company" class="block w-full pl-10 py-3" type="text" name="company"
-                                    placeholder="Contoh: PT. Teknologi Maju" :value="old('company')" required />
+                                    value="{{ old('company', $job->company) }}" required />
                             </div>
                             <x-input-error :messages="$errors->get('company')" class="mt-2" />
                         </div>
@@ -74,7 +73,7 @@
                                         </svg>
                                     </div>
                                     <x-text-input id="location" class="block w-full pl-10 py-3" type="text"
-                                        name="location" placeholder="Jakarta, Indonesia" :value="old('location')" required />
+                                        name="location" value="{{ old('location', $job->location) }}" required />
                                 </div>
                                 <x-input-error :messages="$errors->get('location')" class="mt-2" />
                             </div>
@@ -95,8 +94,8 @@
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-lg shadow-sm block w-full pl-10 py-3"
                                         required>
                                         <option value="">Pilih Jenis Pekerjaan</option>
-                                        <option value="Full-time" {{ old('jenis_pekerjaan') == 'Full-time' ? 'selected' : '' }}>Full Time</option>
-                                        <option value="Part-time" {{ old('jenis_pekerjaan') == 'Part-time' ? 'selected' : '' }}>Part Time</option>
+                                        <option value="Full-time" {{ old('jenis_pekerjaan', $job->jenis_pekerjaan ?? '') == 'Full-time' ? 'selected' : '' }}>Full Time</option>
+                                        <option value="Part-time" {{ old('jenis_pekerjaan', $job->jenis_pekerjaan ?? '') == 'Part-time' ? 'selected' : '' }}>Part Time</option>
                                     </select>
                                 </div>
                                 <x-input-error :messages="$errors->get('jenis_pekerjaan')" class="mt-2" />
@@ -119,8 +118,8 @@
                                         class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-semibold">
                                         Rp
                                     </span>
-                                    <input type="number" name="salary" id="salary" placeholder="10000000"
-                                        value="{{ old('salary') }}"
+                                    <input type="number" name="salary" id="salary"
+                                        value="{{ old('salary', $job->salary) }}" placeholder="10000000"
                                         class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-r-lg shadow-sm block w-full py-3 pl-4">
                                 </div>
                             </div>
@@ -133,11 +132,22 @@
                             <x-input-label for="logo" :value="__('Logo Perusahaan (Opsional)')"
                                 class="text-base font-semibold" />
 
-                            {{-- Preview Container --}}
+                            {{-- Current Logo Preview --}}
+                            @if ($job->logo)
+                                <div class="mb-4" id="current-logo">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Logo Saat Ini:</p>
+                                    <div class="relative inline-block">
+                                        <img src="{{ asset('storage/' . $job->logo) }}" alt="Current Logo"
+                                            class="h-32 w-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-md">
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- New Logo Preview Container --}}
                             <div id="logo-preview-container" class="hidden mb-4">
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview Logo:</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview Logo Baru:</p>
                                 <div class="relative inline-block">
-                                    <img id="logo-preview" class="h-32 w-32 object-cover rounded-lg border-2 border-gray-300 dark:border-gray-600 shadow-md" alt="Logo Preview">
+                                    <img id="logo-preview" class="h-32 w-32 object-cover rounded-lg border-2 border-indigo-400 dark:border-indigo-600 shadow-md" alt="Logo Preview">
                                     <button type="button" onclick="clearLogoPreview()"
                                         class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-lg">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +168,7 @@
                                                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                         </svg>
                                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span class="font-semibold">Klik untuk upload</span> atau drag and drop
+                                            <span class="font-semibold">Klik untuk upload logo baru</span>
                                         </p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG (MAX. 2MB)</p>
                                     </div>
@@ -171,7 +181,7 @@
 
                         <hr class="border-gray-200 dark:border-gray-700" />
 
-                        {{-- SUBMIT BUTTON --}}
+                        {{-- SUBMIT BUTTONS --}}
                         <div class="flex items-center justify-end gap-4">
                             <a href="{{ route('jobs.index') }}"
                                 class="px-6 py-3 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
@@ -181,9 +191,9 @@
                                 class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                 </svg>
-                                {{ __('Simpan Lowongan') }}
+                                {{ __('Update Lowongan') }}
                             </button>
                         </div>
                     </form>
@@ -200,6 +210,11 @@
                 reader.onload = function(e) {
                     document.getElementById('logo-preview').src = e.target.result;
                     document.getElementById('logo-preview-container').classList.remove('hidden');
+                    // Sembunyikan logo lama saat ada preview baru
+                    const currentLogo = document.getElementById('current-logo');
+                    if (currentLogo) {
+                        currentLogo.style.opacity = '0.5';
+                    }
                 }
                 reader.readAsDataURL(file);
             }
@@ -209,6 +224,11 @@
             document.getElementById('logo').value = '';
             document.getElementById('logo-preview-container').classList.add('hidden');
             document.getElementById('logo-preview').src = '';
+            // Tampilkan kembali logo lama
+            const currentLogo = document.getElementById('current-logo');
+            if (currentLogo) {
+                currentLogo.style.opacity = '1';
+            }
         }
     </script>
 </x-app-layout>

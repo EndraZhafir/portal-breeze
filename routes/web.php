@@ -3,7 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,7 +20,7 @@ Route::get('/admin', function(){
     return 'Admin Datanggg';
 })->middleware(['auth', 'isAdmin'])->name('admin');
 
-Route::resource('jobs', JobController::class)->middleware(['auth', 'isAdmin'])->name('index', 'jobs.index');
+Route::resource('jobs', JobController::class)->middleware(['auth', 'isAdmin']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

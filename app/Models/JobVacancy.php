@@ -17,5 +17,6 @@ class JobVacancy extends Model
         'company',
         'logo',
         'salary',
+        'jenis_pekerjaan'
     ];
 }
