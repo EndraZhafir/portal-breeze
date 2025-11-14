@@ -118,8 +118,16 @@ class ApplicationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Application $application)
     {
-        //
+        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa menghapus.'); }
+
+        if ($application->cv && \Storage::disk('public')->exists($application->cv)) {
+            \Storage::disk('public')->delete($application->cv);
+        }
+
+        $application->delete();
+
+        return redirect()->route('applications.index')->with('success', 'Lamaran berhasil dihapus.');
     }
 }
