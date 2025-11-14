@@ -14,7 +14,6 @@
                         class="space-y-6">
                         @csrf
 
-                        {{-- TITLE --}}
                         <div class="space-y-2">
                             <x-input-label for="title" :value="__('Judul Lowongan')" class="text-base font-semibold" />
                             <div class="relative">
@@ -31,17 +30,15 @@
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
 
-                        {{-- DESCRIPTION --}}
                         <div class="space-y-2">
                             <x-input-label for="description" :value="__('Deskripsi')" class="text-base font-semibold" />
                             <textarea name="description" id="description"
                                 placeholder="Jelaskan tanggung jawab pekerjaan, kualifikasi, benefit, dll."
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-lg shadow-sm block w-full py-3"
+                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-600 focus:ring-red-500 dark:focus:ring-red-600 rounded-lg shadow-sm block w-full py-3"
                                 rows="6" required>{{ old('description') }}</textarea>
                             <x-input-error :messages="$errors->get('description')" class="mt-2" />
                         </div>
 
-                        {{-- COMPANY --}}
                         <div class="space-y-2">
                             <x-input-label for="company" :value="__('Nama Perusahaan')" class="text-base font-semibold" />
                             <div class="relative">
@@ -58,9 +55,7 @@
                             <x-input-error :messages="$errors->get('company')" class="mt-2" />
                         </div>
 
-                        {{-- LOCATION & JENIS PEKERJAAN (Row) --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {{-- LOCATION --}}
                             <div class="space-y-2">
                                 <x-input-label for="location" :value="__('Lokasi')" class="text-base font-semibold" />
                                 <div class="relative">
@@ -79,9 +74,8 @@
                                 <x-input-error :messages="$errors->get('location')" class="mt-2" />
                             </div>
 
-                            {{-- JENIS PEKERJAAN --}}
                             <div class="space-y-2">
-                                <x-input-label for="jenis_pekerjaan" :value="__('Jenis Pekerjaan')"
+                                <x-input-label for="job_type" :value="__('Jenis Pekerjaan')"
                                     class="text-base font-semibold" />
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -91,29 +85,21 @@
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
-                                    <select name="jenis_pekerjaan" id="jenis_pekerjaan"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-lg shadow-sm block w-full pl-10 py-3"
+                                    <select name="job_type" id="job_type"
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-600 focus:ring-red-500 dark:focus:ring-red-600 rounded-lg shadow-sm block w-full pl-10 py-3"
                                         required>
                                         <option value="">Pilih Jenis Pekerjaan</option>
-                                        <option value="Full-time" {{ old('jenis_pekerjaan') == 'Full-time' ? 'selected' : '' }}>Full Time</option>
-                                        <option value="Part-time" {{ old('jenis_pekerjaan') == 'Part-time' ? 'selected' : '' }}>Part Time</option>
+                                        <option value="Full-time" {{ old('job_type') == 'Full-time' ? 'selected' : '' }}>Full Time</option>
+                                        <option value="Part-time" {{ old('job_type') == 'Part-time' ? 'selected' : '' }}>Part Time</option>
                                     </select>
                                 </div>
-                                <x-input-error :messages="$errors->get('jenis_pekerjaan')" class="mt-2" />
+                                <x-input-error :messages="$errors->get('job_type')" class="mt-2" />
                             </div>
                         </div>
 
-                        {{-- SALARY --}}
                         <div class="space-y-2">
                             <x-input-label for="salary" :value="__('Gaji (Opsional)')" class="text-base font-semibold" />
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
                                 <div class="flex rounded-lg shadow-sm">
                                     <span
                                         class="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-semibold">
@@ -121,19 +107,17 @@
                                     </span>
                                     <input type="number" name="salary" id="salary" placeholder="10000000"
                                         value="{{ old('salary') }}"
-                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-r-lg shadow-sm block w-full py-3 pl-4">
+                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-600 focus:ring-red-500 dark:focus:ring-red-600 rounded-r-lg shadow-sm block w-full py-3 pl-4">
                                 </div>
                             </div>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Kosongkan jika gaji bisa dinegosiasi</p>
                             <x-input-error :messages="$errors->get('salary')" class="mt-2" />
                         </div>
 
-                        {{-- LOGO WITH PREVIEW --}}
                         <div class="space-y-2">
                             <x-input-label for="logo" :value="__('Logo Perusahaan (Opsional)')"
                                 class="text-base font-semibold" />
 
-                            {{-- Preview Container --}}
                             <div id="logo-preview-container" class="hidden mb-4">
                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview Logo:</p>
                                 <div class="relative inline-block">
@@ -147,7 +131,6 @@
                                 </div>
                             </div>
 
-                            {{-- File Input --}}
                             <div class="flex items-center justify-center w-full">
                                 <label for="logo"
                                     class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -171,14 +154,13 @@
 
                         <hr class="border-gray-200 dark:border-gray-700" />
 
-                        {{-- SUBMIT BUTTON --}}
                         <div class="flex items-center justify-end gap-4">
                             <a href="{{ route('jobs.index') }}"
                                 class="px-6 py-3 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                                 Batal
                             </a>
                             <button type="submit"
-                                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-lg">
+                                class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white font-semibold rounded-lg hover:from-red-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all shadow-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7" />
