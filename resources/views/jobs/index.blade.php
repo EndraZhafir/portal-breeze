@@ -195,6 +195,37 @@
             @endif
         </div>
     </div>
+
+    <script>
+        function previewFile(event, jobId) {
+            const fileInput = document.getElementById(`cv-${jobId}`);
+            const previewBox = document.getElementById(`file-preview-${jobId}`);
+            const fileNameText = document.getElementById(`file-name-${jobId}`);
+            const file = event.target.files[0];
+
+            if (file) {
+                if (file.type !== "application/pdf") {
+                    alert("Hanya file PDF yang diperbolehkan!");
+                    fileInput.value = "";
+                    return;
+                }
+                fileNameText.textContent = file.name;
+                previewBox.classList.remove('hidden');
+                previewBox.classList.add('flex');
+            }
+        }
+
+        function removeFile(jobId) {
+            const fileInput = document.getElementById(`cv-${jobId}`);
+            const previewBox = document.getElementById(`file-preview-${jobId}`);
+            const fileNameText = document.getElementById(`file-name-${jobId}`);
+
+            fileInput.value = "";
+            fileNameText.textContent = "";
+            previewBox.classList.add('hidden');
+            previewBox.classList.remove('flex');
+        }
+    </script>
 </x-app-layout>
 
 <script>

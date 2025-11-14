@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 

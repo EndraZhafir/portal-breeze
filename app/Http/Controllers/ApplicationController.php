@@ -14,7 +14,7 @@ class ApplicationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $applications = [];
@@ -31,18 +31,18 @@ class ApplicationController extends Controller
     }
 
     /**
-     * export applications ke Excel.
+     * Export applications to an Excel file (admin only).
      */
     public function export(Request $request)
     {
-        if (Auth::user()->role != 'admin') {abort(403);}        
+        if (Auth::user()->role != 'admin') { abort(403); }
+
         $jobId = $request->input('job_id');
-        
         if ($jobId !== null && $jobId !== '') {
             if (!ctype_digit($jobId)) {
                 return back()->withErrors(['job_id' => 'Job ID tidak valid.']);
             }
-            $jobId = (int)$jobId;
+            $jobId = (int) $jobId;
         } else {
             $jobId = null;
         }
@@ -51,7 +51,7 @@ class ApplicationController extends Controller
         try {
             return Excel::download(new ApplicationsExport($jobId), $fileName);
         } catch (\Throwable $e) {
-            return back()->withErrors(['export' => 'Export gagal: '.$e->getMessage()]);
+            return back()->withErrors(['export' => 'Export gagal: ' . $e->getMessage()]);
         }
     }
 
@@ -69,18 +69,18 @@ class ApplicationController extends Controller
     public function store(Request $request, $jobId)
     {
         $request->validate([
-            'cv' => 'required|mimes:pdf|max:2048',
+            'cv' => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
 
         $cvPath = $request->file('cv')->store('cvs', 'public');
 
         Application::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'job_id' => $jobId,
             'cv' => $cvPath,
         ]);
 
-        return back()->with('success', 'Lamaran berhasil dikirim!');
+        return back()->with('success', 'Lamaran berhasil dikirim! Good Luck.');
     }
 
     /**
@@ -104,9 +104,11 @@ class ApplicationController extends Controller
      */
     public function update(Request $request, Application $application)
     {
-    if (Auth::user()->role != 'admin') {abort(403, 'Hanya admin yang bisa update.');}
+        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa update.'); }
 
-        $request->validate(['status' => 'required|in:Accepted,Rejected',]);
+        $request->validate([
+            'status' => 'required|in:Accepted,Rejected',
+        ]);
 
         $application->update(['status' => $request->status]);
 
