@@ -14,11 +14,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/hello', function(){
-    return "Halo, ini halaman percobaan route!";
+    return "Halo, percobaan route le!";
 });
 
 Route::get('/admin', function(){
-    return 'Admin Datanggg';
+    return 'Admin Page';
 })->middleware(['auth', 'isAdmin'])->name('admin');
 
 // route import & export 
@@ -38,6 +38,8 @@ Route::resource('applications', ApplicationController::class)->middleware(['auth
 Route::get('/jobs/{job}/applicants', [ApplicationController::class, 'index'])->middleware('isAdmin')->name('application.index');
 Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store'])->middleware('auth')->name('apply.store');
 
+
+// Profile Routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

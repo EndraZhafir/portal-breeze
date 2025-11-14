@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Exports\ApplicationsExport;
+use App\Imports\JobsImport;
 use App\Models\Application;
+use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Mail\JobAppliedMail;
 use Illuminate\Support\Facades\Mail;
@@ -132,11 +133,8 @@ class ApplicationController extends Controller
      */
     public function destroy(Application $application)
     {
-        if (Auth::user()->role != 'admin') { 
-            abort(403, 'Hanya admin yang bisa menghapus.'); 
-        }
+        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa menghapus.'); }
 
-        // Hapus file CV dari storage
         if ($application->cv && \Storage::disk('public')->exists($application->cv)) {
             \Storage::disk('public')->delete($application->cv);
         }

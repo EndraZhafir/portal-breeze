@@ -7,6 +7,10 @@
                 {{ __('Lamaran Saya') }}
             @endif
         </h2>
+
+        <a href="{{ route('applications.export') }}"
+            class="bg-blue-50 px-3 py-2 rounded-xl text-blue-900 shadow-xl hover:bg-indigo-600 hover:text-white transition-all duration-300 font-sans font-semibold">Export
+            All</a>
     </x-slot>
 
     <div class="py-12">
@@ -84,7 +88,8 @@
                             </div>
                             <div class="pr-16">
                                 <h3 class="text-xl font-bold text-white mb-2">{{ $app->user->name }}</h3>
-                                <p class="text-red-100 font-semibold">{{ $app->job->title }}</p>
+                                <p class="text-red-100 font-semibold mb-1">{{ $app->job->title }}</p>
+                                <p class="text-red-50 text-sm">{{ $app->job->company }}</p>
                             </div>
                         </div>
 
