@@ -13,12 +13,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/hello', function () {
-    return "Halo, ini halaman percobaan route!";
+Route::get('/hello', function(){
+    return "Halo, percobaan route le!";
 });
 
-Route::get('/admin', function () {
-    return 'Admin Datanggg';
+Route::get('/admin', function(){
+    return 'Admin Page';
 })->middleware(['auth', 'isAdmin'])->name('admin');
 
 // route import & export 
@@ -47,4 +47,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
