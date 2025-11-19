@@ -6,7 +6,6 @@ use App\Imports\JobsImport;
 use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Storage;
-use App\Imports\JobsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\FromArray;
 

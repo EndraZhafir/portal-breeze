@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Exports\ApplicationsExport;
 use App\Models\Application;
 use Illuminate\Http\Request;
-use App\Models\Application;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ApplicationController extends Controller
