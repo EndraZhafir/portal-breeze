@@ -7,6 +7,7 @@ use App\Models\Application;
 use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ApplicationController extends Controller
@@ -105,8 +106,8 @@ class ApplicationController extends Controller
     {
         if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa menghapus.'); }
 
-        if ($application->cv && \Storage::disk('public')->exists($application->cv)) {
-            \Storage::disk('public')->delete($application->cv);
+        if ($application->cv && Storage::disk('public')->exists($application->cv)) {
+            Storage::disk('public')->delete($application->cv);
         }
 
         $application->delete();
