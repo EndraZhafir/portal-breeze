@@ -14,11 +14,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/hello', function(){
-    return "Halo, ini halaman percobaan route!";
+    return "Halo, percobaan route le!";
 });
 
 Route::get('/admin', function(){
-    return 'Admin Datanggg';
+    return 'Admin Page';
 })->middleware(['auth', 'isAdmin'])->name('admin');
 
 // route import & export 
