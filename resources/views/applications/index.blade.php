@@ -7,6 +7,10 @@
                 {{ __('Lamaran Saya') }}
             @endif
         </h2>
+
+        <a href="{{ route('applications.export') }}"
+            class="bg-blue-50 px-3 py-2 rounded-xl text-blue-900 shadow-xl hover:bg-indigo-600 hover:text-white transition-all duration-300 font-sans font-semibold">Export
+            All</a>
     </x-slot>
 
     <div class="py-12">
@@ -44,25 +48,6 @@
                                     </x-primary-button>
                                 </a>
                             </div>
-                        </div>
-
-                        <div class="space-y-4">
-                            <h3 class="font-semibold text-gray-800 dark:text-gray-200">Export Pelamar (.xlsx)</h3>
-                            <form action="{{ route('applications.export') }}" method="GET" class="flex items-center gap-3 w-full">
-                                <select name="job_id" class="flex-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-600 focus:ring-red-500 dark:focus:ring-red-600 rounded-md shadow-sm text-sm">
-                                    <option value="">Export Semua Lowongan</option>
-                                    @foreach($jobs as $job)
-                                        <option value="{{ $job->id }}">{{ $job->title }} ({{ $job->company }})</option>
-                                    @endforeach
-                                </select>
-                                
-                                <x-primary-button type="submit" class="flex items-center justify-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors font-medium text-sm">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                                    </svg>
-                                    Export
-                                </x-primary-button>
-                            </form>
                         </div>
                     </div>
                 </div>

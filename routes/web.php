@@ -28,16 +28,19 @@ Route::get('/applications/export', [ApplicationController::class, 'export'])->mi
 
 // halaman jobs
 Route::resource('jobs', JobController::class)->middleware(['auth', 'isAdmin'])->except(['index', 'show']);
+
 Route::resource('jobs', JobController::class)->middleware(['auth'])->only(['index', 'show']);
 
 // siapa saja yang sudah melamar
 Route::resource('applications', ApplicationController::class)->middleware(['auth', 'isAdmin'])->except(['index', 'show']);
 Route::resource('applications', ApplicationController::class)->middleware(['auth'])->only(['index', 'show']);
 
-// halaman aplikasi lamaran
-Route::get('/jobs/{job}/applicants', [ApplicationController::class, 'index'])->middleware('isAdmin')->name('application.index');
-Route::post('/jobs/{job}/apply', [ApplicationController::class, 'store'])->middleware('auth')->name('apply.store');
+// Export and Import Routes
+Route::get('/applications-export',[ApplicationController::class, 'export'])->name('applications.export')->middleware('isAdmin');
+Route::post('/jobs/import', [JobController::class, 'import'])->name('jobs.import')->middleware('isAdmin');
 
+
+// Profile Routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

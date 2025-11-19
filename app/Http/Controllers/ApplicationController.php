@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Exports\ApplicationsExport;
 use App\Models\Application;
+use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ApplicationController extends Controller
@@ -35,24 +35,7 @@ class ApplicationController extends Controller
      */
     public function export(Request $request)
     {
-        if (Auth::user()->role != 'admin') { abort(403); }
-
-        $jobId = $request->input('job_id');
-        if ($jobId !== null && $jobId !== '') {
-            if (!ctype_digit($jobId)) {
-                return back()->withErrors(['job_id' => 'Job ID tidak valid.']);
-            }
-            $jobId = (int) $jobId;
-        } else {
-            $jobId = null;
-        }
-
-        $fileName = $jobId ? 'applications_job_' . $jobId . '.xlsx' : 'applications_all.xlsx';
-        try {
-            return Excel::download(new ApplicationsExport($jobId), $fileName);
-        } catch (\Throwable $e) {
-            return back()->withErrors(['export' => 'Export gagal: ' . $e->getMessage()]);
-        }
+        return Excel::download(new ApplicationsExport(), 'applications.xlsx');
     }
 
     /**
