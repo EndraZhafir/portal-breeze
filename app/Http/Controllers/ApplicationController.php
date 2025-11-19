@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\JobAppliedMail;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewApplicationNotification;
+use App\Models\User;
 
 class ApplicationController extends Controller
 {
@@ -52,18 +56,23 @@ class ApplicationController extends Controller
     public function store(Request $request, $jobId)
     {
         $request->validate([
-            'cv' => 'required|mimes:pdf,doc,docx|max:2048',
+            'cv' => 'required|mimes:pdf|max:2048',
         ]);
 
         $cvPath = $request->file('cv')->store('cvs', 'public');
 
-        Application::create([
-            'user_id' => Auth::id(),
+        $application = Application::create([
+            'user_id' => auth()->id(),
             'job_id' => $jobId,
             'cv' => $cvPath,
         ]);
 
-        return back()->with('success', 'Lamaran berhasil dikirim! Good Luck.');
+        Mail::to(auth()->user()->email)->send(new JobAppliedMail(auth()->user(), $application->job));
+
+        return back()->with('success', 'Lamaran berhasil dikirim! Cek email Anda. Good Luck.');
+
+        $admin = User::where('role', 'admin')->first();
+        $admin->notify(new NewApplicationNotification($application));
     }
 
     /**

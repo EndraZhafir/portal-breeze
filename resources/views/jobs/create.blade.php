@@ -5,10 +5,10 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl flex flex-row gap-4 mx-auto sm:px-6 lg:px-8">
-            <div class="max-w-3xl w-2/3 bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-xl">
-                <div class="p-8 text-gray-900 dark:text-gray-100">
+    <div class="py-12 flex justify-center items-center min-h-screen">
+    <div class="mx-auto sm:px-6 lg:px-8 w-full flex justify-center">
+        <div class="max-w-3xl w-2/3 bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-xl">
+            <div class="p-8 text-gray-900 dark:text-gray-100">
 
                     <form action="{{ route('jobs.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
@@ -179,42 +179,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-
-            <div
-                class="flex flex-col gap-4 justify-start items-center w-1/3 bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-xl py-20 px-8">
-                {{-- Import Form --}}
-                <form action="/jobs/import" method="POST" enctype="multipart/form-data"
-                    class="flex flex-col items-center justify-center gap-4 w-full">
-                    @csrf
-                    <label for="file"
-                        class="w-full cursor-pointer flex flex-row items-center justify-center gap-3 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 hover:border-indigo-500 transition-all duration-300 bg-white dark:bg-gray-900/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/30">
-                        <p class="text-sm text-gray-600 dark:text-gray-400 font-medium text-center">
-                            Unggah file Excel (.xlsx / .csv)
-                        </p>
-                        <input type="file" name="file" id="file" accept=".xlsx,.csv" required
-                            class="hidden">
-                    </label>
-
-                    <button type="submit"
-                        class="w-fit flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-500 transition-colors font-medium text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4v16m8-8H4" />
-                        </svg>
-                        Import
-                    </button>
-                </form>
-
-                {{-- Preview Container --}}
-                <div id="preview-container"
-                    class="w-full mt-8 hidden flex-col items-center text-sm text-gray-700 dark:text-gray-300 transition-all duration-500">
-                    <h3 class="font-semibold text-lg mb-3 text-indigo-600 dark:text-indigo-400">Preview Data</h3>
-                    <div id="preview"
-                        class="w-full overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-900 p-4">
-                    </div>
                 </div>
             </div>
         </div>
