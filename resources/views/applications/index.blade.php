@@ -3,6 +3,10 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-100 leading-tight">
             {{ __('Daftar Pelamar') }}
         </h2>
+
+        <a href="{{ route('applications.export') }}"
+            class="bg-blue-50 px-3 py-2 rounded-xl text-blue-900 shadow-xl hover:bg-indigo-600 hover:text-white transition-all duration-300 font-sans font-semibold">Export
+            All</a>
     </x-slot>
 
     <div class="py-12">
@@ -17,30 +21,6 @@
                                 Kelola daftar pelamar yang tersedia.
                             </p>
                         </div>
-
-                        {{-- Import Form --}}
-                        <form action="/jobs/import" method="POST" enctype="multipart/form-data"
-                            class="flex flex-row items-center justify-center gap-4 w-full md:w-1/2">
-                            @csrf
-                            <label for="file"
-                                class="w-full cursor-pointer flex flex-row items-center justify-center gap-3 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 hover:border-indigo-500 transition-all duration-300 bg-white dark:bg-gray-900/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/30">
-                                <p class="text-sm text-gray-600 dark:text-gray-400 font-medium text-center">
-                                    Unggah file Excel (.xlsx / .csv)
-                                </p>
-                                <input type="file" name="file" id="file" accept=".xlsx,.csv" required
-                                    class="hidden">
-                            </label>
-
-                            <button type="submit"
-                                class="w-fit flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-500 transition-colors font-medium text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Import
-                            </button>
-                        </form>
                     </div>
 
                     {{-- Table --}}

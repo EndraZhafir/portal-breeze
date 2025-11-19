@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ApplicationsExport;
-use App\Imports\JobsImport;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +26,6 @@ class ApplicationController extends Controller
     public function export()
     {
         return Excel::download(new ApplicationsExport(), 'applications.xlsx');
-    }
-
-    public function import(Request $request)
-    {
-        $request->validate(['file' => 'required|mimes:xlsx,csv']);
-        Excel::import(new JobsImport(), $request->file('file'));
-        return back()->with( 'success', 'Data lowongan berhasil diimport' );
     }
 
     /**
