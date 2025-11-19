@@ -8,6 +8,11 @@ use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\JobAppliedMail;
+use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendApplicationMailJob;
+use App\Models\User;
+use App\Notifications\NewApplicationNotification;
 
 class ApplicationController extends Controller
 {
@@ -74,13 +79,22 @@ class ApplicationController extends Controller
 
         $cvPath = $request->file('cv')->store('cvs', 'public');
 
-        Application::create([
+        $application = Application::create([
             'user_id' => auth()->id(),
             'job_id' => $jobId,
             'cv' => $cvPath,
         ]);
 
-        return back()->with('success', 'Lamaran berhasil dikirim!');
+        // Kirim email ke pelamar (via queue)
+        dispatch(new SendApplicationMailJob($application->job, auth()->user()));
+
+        // Kirim notifikasi ke admin
+        $admin = User::where('role', 'admin')->first();
+        if ($admin) {
+            $admin->notify(new NewApplicationNotification($application));
+        }
+
+        return back()->with('success', 'Lamaran berhasil dikirim! Cek email Anda. Good Luck.');
     }
 
     /**
@@ -116,8 +130,19 @@ class ApplicationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Application $application)
     {
-        //
+        if (Auth::user()->role != 'admin') { 
+            abort(403, 'Hanya admin yang bisa menghapus.'); 
+        }
+
+        // Hapus file CV dari storage
+        if ($application->cv && \Storage::disk('public')->exists($application->cv)) {
+            \Storage::disk('public')->delete($application->cv);
+        }
+
+        $application->delete();
+
+        return redirect()->route('applications.index')->with('success', 'Lamaran berhasil dihapus.');
     }
 }

@@ -57,7 +57,9 @@
                                                accept=".pdf"
                                                onchange="updateFileName(this, {{ $job->id }})">
                                                
-                                    <x-primary-button>Lamar Sekarang</x-primary-button>
+                                    <x-primary-button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors font-medium text-sm">
+                                        Lamar Sekarang
+                                    </x-primary-button>
                                 </form>
                             </div>
                         @endif

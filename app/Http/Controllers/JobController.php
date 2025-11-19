@@ -161,7 +161,8 @@ class JobController extends Controller
         $data = [
             $headings,
             ['Backend Developer', 'Mengembangkan dan maintain aplikasi backend', 'PT. Tech Indonesia', 'Jakarta', 'Full-time', 8000000],
-            ['Frontend Developer', 'Membuat tampilan website yang menarik', 'PT. Digital Media', 'Bandung', 'Part-time', 5000000]
+            ['Frontend Developer', 'Membuat tampilan website yang menarik', 'PT. Digital Media', 'Bandung', 'Part-time', 5000000],
+            ['UI/UX Designer', 'Mendesain interface yang user-friendly', 'PT. Creative Studio', 'Surabaya', 'Full-time', 7000000]
         ];
 
         $export = new class($data) implements FromArray {
