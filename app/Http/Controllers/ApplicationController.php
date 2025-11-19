@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Exports\ApplicationsExport;
 use App\Models\Application;
 use Illuminate\Http\Request;
+use App\Models\Application;
+use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ApplicationController extends Controller
@@ -13,17 +16,26 @@ class ApplicationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, $jobId)
+    public function index(Request $request)
     {
-        $applications = Application::with('user', 'job')->get();
+        $user = Auth::user();
+        $applications = [];
+        $jobs = [];
 
-        return view('applications.index', compact('applications'));
+        if ($user->role == 'admin') {
+            $applications = Application::with('user', 'job')->get();
+            $jobs = Job::all();
+        } else {
+            $applications = Application::with('user', 'job')->where('user_id', $user->id)->get();
+        }
+
+        return view('applications.index', compact('applications', 'jobs'));
     }
 
     /**
-     * Export applications to an Excel file.
+     * Export applications to an Excel file (admin only).
      */
-    public function export()
+    public function export(Request $request)
     {
         return Excel::download(new ApplicationsExport(), 'applications.xlsx');
     }
@@ -75,16 +87,32 @@ class ApplicationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Application $application)
     {
-        //
+        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa update.'); }
+
+        $request->validate([
+            'status' => 'required|in:Accepted,Rejected',
+        ]);
+
+        $application->update(['status' => $request->status]);
+
+        return redirect()->route('applications.index')->with('success', 'Status pelamar berhasil diupdate.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Application $application)
     {
-        //
+        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa menghapus.'); }
+
+        if ($application->cv && \Storage::disk('public')->exists($application->cv)) {
+            \Storage::disk('public')->delete($application->cv);
+        }
+
+        $application->delete();
+
+        return redirect()->route('applications.index')->with('success', 'Lamaran berhasil dihapus.');
     }
 }

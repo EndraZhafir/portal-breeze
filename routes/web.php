@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,13 +21,17 @@ Route::get('/admin', function () {
     return 'Admin Datanggg';
 })->middleware(['auth', 'isAdmin'])->name('admin');
 
+// route import & export 
+Route::get('/jobs/import/template', [JobController::class, 'downloadTemplate'])->middleware(['auth', 'isAdmin'])->name('jobs.import.template');
+Route::post('/jobs/import', [JobController::class, 'import'])->middleware(['auth', 'isAdmin'])->name('jobs.import');
+Route::get('/applications/export', [ApplicationController::class, 'export'])->middleware(['auth', 'isAdmin'])->name('applications.export');
+
+// halaman jobs
 Route::resource('jobs', JobController::class)->middleware(['auth', 'isAdmin'])->except(['index', 'show']);
 
 Route::resource('jobs', JobController::class)->middleware(['auth'])->only(['index', 'show']);
 
-Route::post('/jobs/{jobId}/apply', [ApplicationController::class, 'store'])->name('apply.store')->middleware('auth');
-Route::get('/jobs/{jobId}/applicants', [ApplicationController::class, 'index'])->name('applications.index')->middleware('isAdmin');
-
+// siapa saja yang sudah melamar
 Route::resource('applications', ApplicationController::class)->middleware(['auth', 'isAdmin'])->except(['index', 'show']);
 Route::resource('applications', ApplicationController::class)->middleware(['auth'])->only(['index', 'show']);
 

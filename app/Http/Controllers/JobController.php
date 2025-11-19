@@ -6,7 +6,9 @@ use App\Imports\JobsImport;
 use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Storage;
+use App\Imports\JobsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\FromArray;
 
 class JobController extends Controller
 {
@@ -37,6 +39,7 @@ class JobController extends Controller
             'description' => 'required',
             'location' => 'required',
             'company' => 'required',
+            'job_type' => 'required|in:Full-time,Part-time',
             'logo' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
@@ -51,7 +54,7 @@ class JobController extends Controller
             'location' => $request->location,
             'company' => $request->company,
             'salary' => $request->salary,
-            'jenis_pekerjaan' => $request->jenis_pekerjaan,
+            'job_type'=> $request->job_type,
             'logo' => $logoPath,
         ]);
 
@@ -68,6 +71,15 @@ class JobController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $job = Job::findOrFail($id);
+        return view('jobs.show', compact('job'));
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -77,14 +89,13 @@ class JobController extends Controller
             'description' => 'required',
             'location' => 'required',
             'company' => 'required',
+            'job_type' => 'required|in:Full-time,Part-time',
             'logo' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         $job = Job::findOrFail($id);
 
-        // Upload logo baru jika ada
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada
             if ($job->logo && Storage::disk('public')->exists($job->logo)) {
                 Storage::disk('public')->delete($job->logo);
             }
@@ -99,7 +110,7 @@ class JobController extends Controller
             'location' => $request->location,
             'company' => $request->company,
             'salary' => $request->salary,
-            'jenis_pekerjaan' => $request->jenis_pekerjaan,
+            'job_type'=> $request->job_type,
             'logo' => $job->logo,
         ]);
 
@@ -113,7 +124,6 @@ class JobController extends Controller
     {
         $job = Job::findOrFail($id);
 
-        // Hapus logo jika ada
         if ($job->logo && Storage::disk('public')->exists($job->logo)) {
             Storage::disk('public')->delete($job->logo);
         }
@@ -125,8 +135,42 @@ class JobController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate(['file' => 'required|mimes:xlsx,csv']);
-        Excel::import(new JobsImport(), $request->file('file'));
-        return back()->with('success', 'Data lowongan berhasil diimport');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+
+        try {
+            Excel::import(new JobsImport, $request->file('file'));
+        } catch (\Throwable $e) {
+            return back()->withErrors(['file' => 'Import gagal: '.$e->getMessage()])->withInput();
+        }
+
+        return back()->with('success', 'Lowongan berhasil diimpor!');
+    }
+
+    public function downloadTemplate()
+    {
+        $headings = [
+            'title', 
+            'description',
+            'company', 
+            'location', 
+            'jenis_pekerjaan',
+            'salary',  
+        ];
+
+        $data = [
+            $headings,
+            ['Backend Developer', 'Mengembangkan dan maintain aplikasi backend', 'PT. Tech Indonesia', 'Jakarta', 'Full-time', 8000000],
+            ['Frontend Developer', 'Membuat tampilan website yang menarik', 'PT. Digital Media', 'Bandung', 'Part-time', 5000000]
+        ];
+
+        $export = new class($data) implements FromArray {
+            protected $data;
+            public function __construct($data) { $this->data = $data; }
+            public function array(): array { return $this->data; }
+        };
+
+        return Excel::download($export, 'template_import_jobs.xlsx');
     }
 }
