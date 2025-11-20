@@ -19,18 +19,34 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
-            @isset($header)
+            @if (isset($header))
                 <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-row w-full justify-between items-center">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
-            @endisset
+            @endif
 
             <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- SweetAlert2 CDN --}}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        {{-- Pop up alert kalau ada session success --}}
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: @json(session('success')),
+                    confirmButtonColor: "#2563eb"
+                });
+            </script>
+        @endif
+        
     </body>
 </html>
