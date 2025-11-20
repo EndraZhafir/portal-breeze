@@ -8,9 +8,6 @@
             @endif
         </h2>
 
-        <a href="{{ route('applications.export') }}"
-            class="bg-blue-50 px-3 py-2 rounded-xl text-blue-900 shadow-xl hover:bg-indigo-600 hover:text-white transition-all duration-300 font-sans font-semibold">Export
-            All</a>
     </x-slot>
 
     <div class="py-12">

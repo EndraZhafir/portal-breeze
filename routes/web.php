@@ -3,15 +3,20 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::delete('/notifications/{id}/dismiss', [DashboardController::class, 'dismissNotification'])
+    ->middleware(['auth'])
+    ->name('notifications.dismiss');
 
 Route::get('/hello', function(){
     return "Halo, percobaan route le!";

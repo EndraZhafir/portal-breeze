@@ -9,17 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class JobAppliedMail extends Mailable
+class ApplicationAcceptedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $job;
-    public $user;
+    public $application;
 
-    public function __construct($job, $user)
+    /**
+     * Create a new message instance.
+     */
+    public function __construct($application)
     {
-        $this->job = $job;
-        $this->user = $user;
+        $this->application = $application;
     }
 
     /**
@@ -28,7 +29,7 @@ class JobAppliedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Konfirmasi Lamaran Anda - ' . $this->job->title,
+            subject: 'Konfirmasi Lamaran, Anda diterima sebagai - ' . $this->application->job->title,
         );
     }
 
@@ -38,10 +39,9 @@ class JobAppliedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.job_applied',
+            markdown: 'emails.application_accepted',
             with: [
-                'job' => $this->job,
-                'user' => $this->user,
+                'application' => $this->application,
             ],
         );
     }

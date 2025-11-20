@@ -9,6 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\JobAppliedMail;
+use App\Models\User;
+use App\Models\JobVacancy as Job;
 
 class SendApplicationMailJob implements ShouldQueue
 {
@@ -31,14 +33,13 @@ class SendApplicationMailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $job = \App\Models\JobVacancy::find($this->jobId);
-        $user = \App\Models\User::find($this->userId);
-        \Log::info('SendApplicationMailJob', [
-            'user_email' => $user ? $user->email : null,
-            'job_title' => $job ? $job->title : null,
-        ]);
-        if ($job && $user) {
-            Mail::to($user->email)->send(new JobAppliedMail($job, $user));
+        $user = User::find($this->userId);
+        $job = Job::find($this->jobId);
+
+        if (!$user || !$job) {
+            return; // data hilang, jangan kirim email
         }
+
+        Mail::to($user->email)->send(new JobAppliedMail($job, $user));
     }
 }

@@ -6,6 +6,8 @@ use App\Exports\ApplicationsExport;
 use App\Imports\JobsImport;
 use App\Models\Application;
 use Illuminate\Http\Request;
+use App\Mail\ApplicationAcceptedMail;
+use App\Mail\ApplicationRejectedMail;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -119,13 +121,20 @@ class ApplicationController extends Controller
      */
     public function update(Request $request, Application $application)
     {
-    if (Auth::user()->role != 'admin') {abort(403, 'Hanya admin yang bisa update.');}
-
+        if (Auth::user()->role != 'admin') {abort(403, 'Hanya admin yang bisa update.');}
+        
         $request->validate(['status' => 'required|in:Accepted,Rejected',]);
 
+        // email custom
+        if ($request->status == 'Accepted') {
+            Mail::to($application->user->email)->send(new ApplicationAcceptedMail($application));
+        } elseif ($request->status == 'Rejected') {
+            Mail::to($application->user->email)->send(new ApplicationRejectedMail($application));
+        }
+        
         $application->update(['status' => $request->status]);
-
-        return redirect()->route('applications.index')->with('success', 'Status pelamar berhasil diupdate.');
+        
+        return redirect()->route('applications.index')->with('success', 'Status pelamar berhasil diupdate dan email notifikasi telah dikirim ke ' . $application->user->email . '.');
     }
 
     /**

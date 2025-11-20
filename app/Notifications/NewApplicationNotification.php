@@ -28,7 +28,8 @@ class NewApplicationNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        // mengirim notifikasi melalui email dan database
+        return ['mail', 'database'];
     }
 
     /**
@@ -36,11 +37,29 @@ class NewApplicationNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        // deklarasi direktori cv
+        $cvUrl = url('storage/' . $this->application->cv);
+
         return (new MailMessage)
             ->subject('Lamaran Pekerjaan Baru Diterima')
             ->line('Ada lamaran pekerjaan baru untuk lowongan: ' . $this->application->job->title)
             ->line('Pelamar: ' . $this->application->user->name . ' (' . $this->application->user->email . ')')
-            ->action('Lihat Lamaran', url('/applications'));
+            ->action('Lihat Lamaran', url('/applications'))
+
+            // untuk download cv
+            ->action('Download CV', $cvUrl);
+    }
+
+    // Ambil data notifikasi untuk disimpan di database
+    public function toDatabase(object $notifiable)
+    {
+        return [
+            'job_title' => $this->application->job->title,
+            'user_name' => $this->application->user->name,
+            'user_email' => $this->application->user->email,
+            'cv' => $this->application->cv,
+            'application_id' => $this->application->id,
+        ];
     }
 
     /**

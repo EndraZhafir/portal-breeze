@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    <title>Lamaran Diterima</title>
-    </head>
+@component('mail::message')
+# Lamaran Diterima
 
-    <body>
-        <h2>Halo {{ $user->name }},</h2>
-        <p>Terima kasih telah melamar pekerjaan
-            <b>{{ $job->title }}</b> di {{ $job->company }}.</p>
-            <p>Lamaran Anda telah kami terima dan sedang diproses oleh tim HR kami.</p>
-            <br>
-            <p>Salam,</p>
-            <p>
-                <b>Tim JobPortal</b>
-            </p>
-    </body>
-</html>
+Halo **{{ $user->name }}**, 
+
+Terima kasih telah melamar pekerjaan **{{ $job->title }}** di **{{ $job->company }}**.
+
+Lamaran Anda telah kami terima dan sedang diproses oleh tim HR kami.
+
+@component('mail::button', ['url' => url('/')])
+Kunjungi Portal
+@endcomponent
+
+Salam,
+JobPortal
+@endcomponent
