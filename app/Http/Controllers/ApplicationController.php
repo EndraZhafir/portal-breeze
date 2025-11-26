@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ApplicationsExport;
+use App\Jobs\SendApplicationMailJob;
+use App\Jobs\SendApplicationStatusMailJob;
+use App\Mail\JobAppliedMail;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use App\Models\JobVacancy as Job;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Notifications\NewApplicationNotification;
+use App\Models\User;
 
 class ApplicationController extends Controller
 {
@@ -53,18 +59,29 @@ class ApplicationController extends Controller
     public function store(Request $request, $jobId)
     {
         $request->validate([
-            'cv' => 'required|mimes:pdf,doc,docx|max:2048',
+            'cv' => 'required|mimes:pdf|max:2048',
         ]);
 
         $cvPath = $request->file('cv')->store('cvs', 'public');
-
-        Application::create([
+        $application = Application::create([
             'user_id' => Auth::id(),
             'job_id' => $jobId,
             'cv' => $cvPath,
         ]);
 
-        return back()->with('success', 'Lamaran berhasil dikirim! Good Luck.');
+        $admin = User::where('role', 'admin')->first();
+        $admin->notify(new NewApplicationNotification($application));
+
+        dispatch(new SendApplicationMailJob($application->job, Auth::user()))->delay(now()->addSeconds(5));
+
+        // Kirim email ke user
+        // Mail::to(Auth::user()->email)
+        //     ->send(new JobAppliedMail(
+        //         $application->job,
+        //         Auth::user()
+        //     ));
+
+        return back()->with('success', 'Lamaran berhasil dikirim! Cek email Anda.');
     }
 
     /**
@@ -88,7 +105,9 @@ class ApplicationController extends Controller
      */
     public function update(Request $request, Application $application)
     {
-        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa update.'); }
+        if (Auth::user()->role != 'admin') {
+            abort(403, 'Hanya admin yang bisa update.');
+        }
 
         $request->validate([
             'status' => 'required|in:Accepted,Rejected',
@@ -96,7 +115,9 @@ class ApplicationController extends Controller
 
         $application->update(['status' => $request->status]);
 
-        return redirect()->route('applications.index')->with('success', 'Status pelamar berhasil diupdate.');
+        dispatch(new SendApplicationStatusMailJob($application))->delay(now()->addSeconds(2));
+
+        return redirect()->route('applications.index')->with('success', 'Status pelamar berhasil diupdate & notifikasi dikirim.');
     }
 
     /**
@@ -104,7 +125,9 @@ class ApplicationController extends Controller
      */
     public function destroy(Application $application)
     {
-        if (Auth::user()->role != 'admin') { abort(403, 'Hanya admin yang bisa menghapus.'); }
+        if (Auth::user()->role != 'admin') {
+            abort(403, 'Hanya admin yang bisa menghapus.');
+        }
 
         if ($application->cv && Storage::disk('public')->exists($application->cv)) {
             Storage::disk('public')->delete($application->cv);
